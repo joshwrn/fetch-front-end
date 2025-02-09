@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { FETCH_URL as DOGS_URL } from '../constants/fetch-url'
-import { useMutation } from 'react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -26,6 +26,7 @@ const formSchema = z.object({
 export default function Home() {
   const router = useRouter()
   const loginMutation = useMutation({
+    mutationKey: [`login`],
     mutationFn: async (input: z.infer<typeof formSchema>) => {
       const res = await fetch(DOGS_URL + `/auth/login`, {
         credentials: `include`,
@@ -38,6 +39,7 @@ export default function Home() {
         }),
         method: `POST`,
       })
+      console.log(`res`, res)
       if (res.status === 200) {
         router.push(`/dogs`)
       }
