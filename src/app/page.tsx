@@ -53,9 +53,10 @@ export default function Home() {
   })
 
   return (
-    <div>
+    <div className="bg-orange-100 h-screen flex flex-col justify-center items-center">
       <FormProvider {...form}>
         <form
+          className="flex flex-col gap-4 p-8 rounded-lg bg-orange-50 shadow-md max-w-full w-[400px]"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit((input) => loginMutation.mutate(input))()

@@ -50,10 +50,10 @@ const Dogs = () => {
   const dogsSearchQuery = useInfiniteQuery({
     queryKey: [`dogs`, queryParams.params],
     queryFn: async ({ pageParam = 0 }) => {
-      const url = appendQueryParams(
-        fetchUrl(`/dogs/search`),
-        queryParams.params
-      )
+      const url = appendQueryParams(fetchUrl(`/dogs/search`), {
+        ...queryParams.params,
+        from: `${pageParam * pageSize}`,
+      })
       const dogIdsResponse = await fetch(url, {
         credentials: `include`,
         headers: {
@@ -99,7 +99,7 @@ const Dogs = () => {
           <SortOrderDropdown />
         </div>
         <Button className="bg-orange-50 flex gap-4 items-center hover:bg-orange-200">
-          <p className="text-orange-950">Start Match</p>
+          <p className="text-orange-950">Find Your Match</p>
           <p className="text-orange-950">{favorites.length}</p>
         </Button>
       </header>
