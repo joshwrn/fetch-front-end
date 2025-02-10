@@ -1,4 +1,6 @@
 'use client'
+import { MultiSelect } from '@/components/ui/multi-select'
+import { ProgressiveImage } from '@/components/ui/progressive-image'
 import {
   Select,
   SelectContent,
@@ -8,46 +10,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FETCH_URL } from '@/constants/fetch-url'
 import { AuthenticationError } from '@/lib/errors'
-import { fetchUrl } from '@/lib/fetch-url'
-import { useQueryParams } from '@/lib/query-params'
+import { fetchUrl, handleFetchStatus } from '@/lib/fetch-url'
+import { appendQueryParams, useQueryParams } from '@/lib/query-params'
 import {
   DogResponseSchema,
   DogsSearchSchema,
 } from '@/lib/schemas/fetch-schemas'
 import { useHasBeenInViewport } from '@/lib/use-in-viewport'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import Image from 'next/image'
 
 const PAGE_SIZE = 25
 
 const Dogs = () => {
-  const queryParams = useQueryParams()
+  const queryParams = useQueryParams({
+    defaultParams: {
+      breeds: ``,
+      zipCodes: ``,
+      ageMin: ``,
+      ageMax: ``,
+      sort: `breed:asc`,
+      size: `${PAGE_SIZE}`,
+    },
+  })
+
   const { ref: lastDogRef } = useHasBeenInViewport({
     onVisible: () => dogsSearchQuery.fetchNextPage(),
   })
 
-  const params = {
-    breeds: queryParams.searchParams.get(`breeds`),
-    zipCodes: queryParams.searchParams.get(`zipCodes`),
-    ageMin: queryParams.searchParams.get(`ageMin`),
-    ageMax: queryParams.searchParams.get(`ageMax`),
-    sort: queryParams.searchParams.get(`sort`),
-    size: Number(queryParams.searchParams.get(`size`) ?? PAGE_SIZE),
-    from: 0,
-  }
-
   const dogsSearchQuery = useInfiniteQuery({
-    queryKey: [`dogs`, params],
+    queryKey: [`dogs`, queryParams.params],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log(`fetching dogs`)
-      const url = fetchUrl(`/dogs/search`)
-      params.from = params.size * pageParam
-      for (const [key, value] of Object.entries(params)) {
-        if (value) url.searchParams.append(key, `${value}`)
-      }
-      // url.searchParams.append(`sort`, `breed:asc`)
+      const url = appendQueryParams(
+        fetchUrl(`/dogs/search`),
+        queryParams.params
+      )
       const dogIdsResponse = await fetch(url, {
         credentials: `include`,
         headers: {
@@ -55,12 +54,7 @@ const Dogs = () => {
         },
         method: `GET`,
       })
-      if (dogIdsResponse.status === 401) {
-        throw new AuthenticationError(`Not authenticated`)
-      }
-      if (dogIdsResponse.status !== 200) {
-        throw new Error(`Failed to fetch dogs`)
-      }
+      handleFetchStatus(dogIdsResponse)
       const dogsIds = DogsSearchSchema.parse(await dogIdsResponse.json())
       const dogsResponse = await fetch(fetchUrl(`/dogs`), {
         credentials: `include`,
@@ -70,9 +64,7 @@ const Dogs = () => {
         method: `POST`,
         body: JSON.stringify(dogsIds.resultIds),
       })
-      if (dogsResponse.status !== 200) {
-        throw new Error(`Failed to fetch dogs`)
-      }
+      handleFetchStatus(dogsResponse)
       const dogs = DogResponseSchema.parse(await dogsResponse.json())
       return {
         data: dogs,
@@ -96,26 +88,25 @@ const Dogs = () => {
         <SortOrderDropdown />
       </header>
       <main className="gap-4 p-4 border-2 border-black flex-wrap h-full w-full overflow-auto grid grid-cols-3">
-        {dogsSearchQuery.isLoading ? <p>Finding friends...</p> : null}
         {dogsSearchQuery.data?.pages.map((page, pageIndex) =>
           page.data.map((dog, dogIndex) => {
             const isLastPage =
               pageIndex === dogsSearchQuery.data.pages.length - 1
             const isLastDog = dogIndex === page.data.length - 1
-
             return (
               <div
                 key={dog.id}
                 ref={isLastPage && isLastDog ? lastDogRef : undefined}
-                className="flex flex-col w-full h-96 items-center justify-center border-2 border-black relative overflow-hidden rounded-xl"
+                className="flex flex-col w-full h-96 items-center justify-center border-2 border-black relative overflow-hidden rounded-xl gap-2 p-4"
               >
                 <p>{dog.name}</p>
-                <Image
+                <ProgressiveImage
                   src={dog.img}
                   alt={dog.name}
                   width={200}
                   height={200}
-                  className="rounded-lg object-cover h-60"
+                  className="rounded-lg object-cover h-60 w-[200px]"
+                  loading="lazy"
                 />
                 <p>{dog.age}</p>
                 <p>{dog.breed}</p>
@@ -124,6 +115,22 @@ const Dogs = () => {
             )
           })
         )}
+        {dogsSearchQuery.isFetchingNextPage ? (
+          <>
+            {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-col w-full h-96 items-center justify-center border-2 border-black relative overflow-hidden rounded-xl gap-2 p-4"
+              >
+                <Skeleton className="h-[20px] w-[200px]" />
+                <Skeleton className="h-60 w-[200px]" />
+                <Skeleton className="h-[20px] w-[200px]" />
+                <Skeleton className="h-[20px] w-[200px]" />
+                <Skeleton className="h-[20px] w-[200px]" />
+              </div>
+            ))}
+          </>
+        ) : null}
       </main>
     </div>
   )
@@ -151,37 +158,28 @@ const SortOrderDropdown = () => {
 
 const BreedSelection = () => {
   const queryParams = useQueryParams()
-  const breedsQuery = useQuery<string[]>({
+  const breedsQuery = useQuery<{ key: string; value: string }[]>({
     queryKey: [`breeds`],
     queryFn: async () => {
-      const res = await fetch(FETCH_URL + `/dogs/breeds`, {
+      const breedsResponse = await fetch(fetchUrl(`/dogs/breeds`), {
         credentials: `include`,
         headers: {
           'Content-Type': `application/json`,
         },
         method: `GET`,
       })
-      if (res.status === 200) {
-        return await res.json()
-      }
-      throw new Error(`Failed to fetch breeds`)
+      handleFetchStatus(breedsResponse)
+      return (await breedsResponse.json()).map((breed: string) => ({
+        key: breed,
+        value: breed,
+      }))
     },
   })
   return (
-    <Select onValueChange={(value) => queryParams.push(`breeds`, value)}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Breed" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Breeds</SelectLabel>
-          {breedsQuery.data?.map((breed) => (
-            <SelectItem key={breed} value={breed}>
-              {breed}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <MultiSelect
+      values={breedsQuery.data ?? []}
+      label={`Breeds`}
+      onChange={(value) => queryParams.push(`breeds`, value.join(`,`))}
+    />
   )
 }
