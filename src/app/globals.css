@@ -68,6 +68,18 @@ body {
     @apply border-border;
     @apply text-orange-950;
     font-family: var(--font-geist-sans);
+    outline: none;
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: theme('colors.orange.200');
+      border-radius: 10px;
+    }
   }
   body {
     @apply bg-background text-foreground;

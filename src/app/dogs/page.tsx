@@ -15,7 +15,7 @@ import { PiDogLight } from 'react-icons/pi'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toggle } from '@/components/ui/toggle'
-import { fetchUrl, handleFetchStatus } from '@/lib/fetch-url'
+import { fetchUrl, useHandleFetchStatus } from '@/lib/fetch-url'
 import { appendQueryParams, useQueryParams } from '@/lib/query-params'
 import {
   DogResponseSchema,
@@ -38,6 +38,8 @@ const Dogs = () => {
       size: `25`,
     },
   })
+
+  const handleFetchStatus = useHandleFetchStatus()
 
   const pageSize = parseInt(queryParams.params.size)
 
@@ -89,7 +91,7 @@ const Dogs = () => {
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
-      <header className="flex gap-4 justify-between items-center px-5 py-4 bg-orange-100 bg-opacity-75 border-orange-200 border fixed top-0 left-0 right-0 z-10 backdrop-blur-lg">
+      <header className="flex gap-4 justify-between items-center px-5 py-4 bg-orange-100 bg-opacity-90 border-orange-200 border fixed top-0 left-0 right-0 z-10 backdrop-blur-lg">
         <div className="flex gap-2 items-center">
           <PiDogLight size={24} />
           <h1>Dog Match</h1>
@@ -161,7 +163,9 @@ const Dogs = () => {
             )
           })
         )}
-        {dogsSearchQuery.isFetchingNextPage ? (
+        {dogsSearchQuery.isFetchingNextPage ||
+        dogsSearchQuery.isFetching ||
+        dogsSearchQuery.isLoading ? (
           <>
             {Array.from({ length: pageSize }).map((_, i) => (
               <div
@@ -203,6 +207,7 @@ const SortOrderDropdown = () => {
 
 const BreedSelection = () => {
   const queryParams = useQueryParams()
+  const handleFetchStatus = useHandleFetchStatus()
   const breedsQuery = useQuery<{ key: string; value: string }[]>({
     queryKey: [`breeds`],
     queryFn: async () => {
