@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { FETCH_URL as DOGS_URL } from '../constants/fetch-url'
 import { useMutation } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
+import { fetchUrl } from '@/lib/fetch-url'
 
 const formSchema = z.object({
   name: z.string().min(3),
@@ -28,7 +28,7 @@ export default function Home() {
   const loginMutation = useMutation({
     mutationKey: [`login`],
     mutationFn: async (input: z.infer<typeof formSchema>) => {
-      const res = await fetch(DOGS_URL + `/auth/login`, {
+      const res = await fetch(fetchUrl(`/auth/login`), {
         credentials: `include`,
         headers: {
           'Content-Type': `application/json`,
@@ -39,7 +39,6 @@ export default function Home() {
         }),
         method: `POST`,
       })
-      console.log(`res`, res)
       if (res.status === 200) {
         router.push(`/dogs`)
       }
@@ -57,7 +56,10 @@ export default function Home() {
     <div>
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit((input) => loginMutation.mutate(input))}
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit((input) => loginMutation.mutate(input))()
+          }}
         >
           <FormField
             control={form.control}

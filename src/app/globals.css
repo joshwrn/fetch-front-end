@@ -7,10 +7,6 @@ body {
   height: 100%;
 }
 
-* {
-  font-family: var(--font-geist-sans);
-}
-
 @layer base {
   :root {
     --radius: 0.5rem;
@@ -70,6 +66,8 @@ body {
 @layer base {
   * {
     @apply border-border;
+    @apply text-orange-950;
+    font-family: var(--font-geist-sans);
   }
   body {
     @apply bg-background text-foreground;

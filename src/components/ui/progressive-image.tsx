@@ -13,7 +13,7 @@ export const ProgressiveImage = ({
 }: ImageProps) => {
   const [isLoading, setIsLoading] = React.useState(true)
   return (
-    <picture>
+    <>
       {isLoading && <Skeleton className={className} />}
       <Image
         src={src}
@@ -29,6 +29,6 @@ export const ProgressiveImage = ({
         loading="lazy"
         onLoadingComplete={() => setIsLoading(false)}
       />
-    </picture>
+    </>
   )
 }
