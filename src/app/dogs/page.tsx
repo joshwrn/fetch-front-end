@@ -16,6 +16,7 @@ import {
   DogResponseSchema,
   DogsSearchSchema,
 } from '@/lib/schemas/fetch-schemas'
+import { useHasBeenInViewport } from '@/lib/use-in-viewport'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 
@@ -23,6 +24,9 @@ const PAGE_SIZE = 25
 
 const Dogs = () => {
   const queryParams = useQueryParams()
+  const { ref: lastDogRef } = useHasBeenInViewport({
+    onVisible: () => dogsSearchQuery.fetchNextPage(),
+  })
 
   const params = {
     breeds: queryParams.searchParams.get(`breeds`),
@@ -37,6 +41,7 @@ const Dogs = () => {
   const dogsSearchQuery = useInfiniteQuery({
     queryKey: [`dogs`, params],
     queryFn: async ({ pageParam = 0 }) => {
+      console.log(`fetching dogs`)
       const url = fetchUrl(`/dogs/search`)
       params.from = params.size * pageParam
       for (const [key, value] of Object.entries(params)) {
@@ -84,25 +89,65 @@ const Dogs = () => {
   })
   console.log(`dogsSearchQuery`, dogsSearchQuery)
   return (
-    <div>
-      <h1>Dogs</h1>
-      <BreedSelection />
-      {dogsSearchQuery.data?.pages.map((page) =>
-        page.data.map((dog) => (
-          <div key={dog.id}>
-            <p>{dog.name}</p>
-            <Image src={dog.img} alt={dog.name} width={200} height={200} />
-            <p>{dog.age}</p>
-            <p>{dog.breed}</p>
-            <p>{dog.zip_code}</p>
-          </div>
-        ))
-      )}
+    <div className="flex flex-col w-full border-2 border-red-500 h-screen overflow-hidden">
+      <header className="flex gap-4 justify-between px-20 py-4">
+        <h1>Dogs</h1>
+        <BreedSelection />
+        <SortOrderDropdown />
+      </header>
+      <main className="gap-4 p-4 border-2 border-black flex-wrap h-full w-full overflow-auto grid grid-cols-3">
+        {dogsSearchQuery.isLoading ? <p>Finding friends...</p> : null}
+        {dogsSearchQuery.data?.pages.map((page, pageIndex) =>
+          page.data.map((dog, dogIndex) => {
+            const isLastPage =
+              pageIndex === dogsSearchQuery.data.pages.length - 1
+            const isLastDog = dogIndex === page.data.length - 1
+
+            return (
+              <div
+                key={dog.id}
+                ref={isLastPage && isLastDog ? lastDogRef : undefined}
+                className="flex flex-col w-full h-96 items-center justify-center border-2 border-black relative overflow-hidden rounded-xl"
+              >
+                <p>{dog.name}</p>
+                <Image
+                  src={dog.img}
+                  alt={dog.name}
+                  width={200}
+                  height={200}
+                  className="rounded-lg object-cover h-60"
+                />
+                <p>{dog.age}</p>
+                <p>{dog.breed}</p>
+                <p>{dog.zip_code}</p>
+              </div>
+            )
+          })
+        )}
+      </main>
     </div>
   )
 }
 
 export default Dogs
+
+const SortOrderDropdown = () => {
+  const queryParams = useQueryParams()
+  return (
+    <Select onValueChange={(value) => queryParams.push(`sort`, value)}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Sort Order" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Sort Order</SelectLabel>
+          <SelectItem value="breed:asc">Breed (A-Z)</SelectItem>
+          <SelectItem value="breed:desc">Breed (Z-A)</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  )
+}
 
 const BreedSelection = () => {
   const queryParams = useQueryParams()
