@@ -3,16 +3,18 @@ import { dogUrl, useHandleDogStatus } from '@/lib/dog-url'
 import { DogResponseSchema } from '@/lib/schemas/dog-schemas'
 import { useQuery } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useContext } from 'react'
 import Confetti from 'react-confetti'
 import { ProgressiveImage } from '@/components/ui/progressive-image'
 import { Button } from '@/components/ui/button'
+import { DogsContext } from '@/state/dogs-context'
 
 const Match: React.FC = () => {
   const pathname = useParams()
   const matchId = pathname.match
   const router = useRouter()
   const handleFetchStatus = useHandleDogStatus()
+  const { setFavorites } = useContext(DogsContext)
 
   const matchedDogQuery = useQuery({
     queryKey: [`dogs`, matchId],
@@ -47,9 +49,12 @@ const Match: React.FC = () => {
         <Button
           variant="outline"
           className="w-[100px]"
-          onClick={() => router.push(`/dogs`)}
+          onClick={() => {
+            setFavorites([])
+            router.push(`/dogs`)
+          }}
         >
-          Go Back
+          Restart
         </Button>
       </header>
       <h1 className="text-xl font-bold text-center text-orange-950 mb-4">
