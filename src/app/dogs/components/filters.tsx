@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { MultiSelect } from '@/components/ui/multi-select'
 import {
   Select,
@@ -20,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useQueryParams } from '@/lib/query-params'
-import { fetchUrl, useHandleFetchStatus } from '@/lib/fetch-url'
+import { dogUrl, useHandleDogStatus } from '@/lib/dog-url'
 import { useQuery } from '@tanstack/react-query'
 
 export const Filters: React.FC = () => {
@@ -63,11 +62,12 @@ const SortOrderDropdown = () => {
 
 const BreedSelection = () => {
   const queryParams = useQueryParams()
-  const handleFetchStatus = useHandleFetchStatus()
+  const handleFetchStatus = useHandleDogStatus()
+
   const breedsQuery = useQuery<{ key: string; value: string }[]>({
     queryKey: [`breeds`],
     queryFn: async () => {
-      const breedsResponse = await fetch(fetchUrl(`/dogs/breeds`), {
+      const breedsResponse = await fetch(dogUrl(`/dogs/breeds`), {
         credentials: `include`,
         headers: {
           'Content-Type': `application/json`,
@@ -81,7 +81,9 @@ const BreedSelection = () => {
       }))
     },
   })
+
   const selectedBreeds = queryParams.params.breeds?.split(`,`) ?? []
+
   return (
     <MultiSelect
       values={breedsQuery.data ?? []}

@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
-import { fetchUrl } from '@/lib/fetch-url'
+import { dogUrl } from '@/lib/dog-url'
 
 const formSchema = z.object({
   name: z.string().min(3),
@@ -28,7 +28,7 @@ export default function Home() {
   const loginMutation = useMutation({
     mutationKey: [`login`],
     mutationFn: async (input: z.infer<typeof formSchema>) => {
-      const res = await fetch(fetchUrl(`/auth/login`), {
+      const res = await fetch(dogUrl(`/auth/login`), {
         credentials: `include`,
         headers: {
           'Content-Type': `application/json`,

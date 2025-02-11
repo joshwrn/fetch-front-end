@@ -1,7 +1,7 @@
 import { ProgressiveImage } from '@/components/ui/progressive-image'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toggle } from '@/components/ui/toggle'
-import { DogSchema } from '@/lib/schemas/fetch-schemas'
+import { DogSchema } from '@/lib/schemas/dog-schemas'
 import React from 'react'
 import { IoIosHeart, IoIosHeartEmpty } from 'react-icons/io'
 import { z } from 'zod'

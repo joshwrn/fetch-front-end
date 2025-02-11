@@ -18,6 +18,10 @@ export const DogSchema = z.object({
 
 export const DogResponseSchema = z.array(DogSchema)
 
+export const MatchSchema = z.object({
+  match: z.string(),
+})
+
 export const LocationSchema = z.object({
   zip_code: z.string(),
   latitude: z.number(),

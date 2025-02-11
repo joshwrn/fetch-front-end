@@ -1,19 +1,13 @@
 'use client'
-import { PiDogLight } from 'react-icons/pi'
-
-import { fetchUrl, useHandleFetchStatus } from '@/lib/fetch-url'
+import { dogUrl, useHandleDogStatus } from '@/lib/dog-url'
 import { appendQueryParams, useQueryParams } from '@/lib/query-params'
-import {
-  DogResponseSchema,
-  DogsSearchSchema,
-} from '@/lib/schemas/fetch-schemas'
+import { DogResponseSchema, DogsSearchSchema } from '@/lib/schemas/dog-schemas'
 import { useHasBeenInViewport } from '@/lib/use-in-viewport'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useContext } from 'react'
 import { DogsContext } from '@/state/dogs-context'
-import { Button } from '@/components/ui/button'
-import { Filters } from './components/filters'
 import { DogCard, DogCardSkeleton } from './components/dog-card'
+import { Header } from './components/header'
 
 const Dogs = () => {
   const queryParams = useQueryParams({
@@ -27,7 +21,7 @@ const Dogs = () => {
     },
   })
 
-  const handleFetchStatus = useHandleFetchStatus()
+  const handleFetchStatus = useHandleDogStatus()
 
   const pageSize = parseInt(queryParams.params.size)
 
@@ -40,7 +34,7 @@ const Dogs = () => {
   const dogsSearchQuery = useInfiniteQuery({
     queryKey: [`dogs`, queryParams.params],
     queryFn: async ({ pageParam = 0 }) => {
-      const url = appendQueryParams(fetchUrl(`/dogs/search`), {
+      const url = appendQueryParams(dogUrl(`/dogs/search`), {
         ...queryParams.params,
         from: `${pageParam * pageSize}`,
       })
@@ -53,7 +47,7 @@ const Dogs = () => {
       })
       handleFetchStatus(dogIdsResponse)
       const dogsIds = DogsSearchSchema.parse(await dogIdsResponse.json())
-      const dogsResponse = await fetch(fetchUrl(`/dogs`), {
+      const dogsResponse = await fetch(dogUrl(`/dogs`), {
         credentials: `include`,
         headers: {
           'Content-Type': `application/json`,
@@ -79,19 +73,7 @@ const Dogs = () => {
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
-      <header className="grid grid-cols-3 gap-4 items-center px-5 py-4 bg-orange-100 bg-opacity-90 border-orange-200 border fixed top-0 left-0 right-0 z-10 backdrop-blur-lg">
-        <div className="flex gap-2 items-center">
-          <PiDogLight size={24} />
-          <h1>Dog Match</h1>
-        </div>
-        <Button className="bg-orange-50 flex gap-4 items-center justify-self-center hover:bg-orange-200 w-[200px]">
-          <p>Find Your Match</p>
-          <p>{favorites.length}</p>
-        </Button>
-        <div className="flex gap-4 items-center justify-self-end">
-          <Filters />
-        </div>
-      </header>
+      <Header />
       <main className="gap-4 p-4 pt-[90px] flex-wrap h-full w-full overflow-auto bg-orange-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {dogsSearchQuery.data?.pages.map((page, pageIndex) =>
           page.data.map((dog, dogIndex) => {

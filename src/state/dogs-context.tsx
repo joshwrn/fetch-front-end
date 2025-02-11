@@ -1,4 +1,4 @@
-import { DogSchema } from '@/lib/schemas/fetch-schemas'
+import { DogSchema } from '@/lib/schemas/dog-schemas'
 import React from 'react'
 import { z } from 'zod'
 

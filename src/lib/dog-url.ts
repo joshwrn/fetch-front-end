@@ -3,11 +3,11 @@ import { useRouter } from 'next/navigation'
 
 export const FETCH_URL = `https://frontend-take-home-service.fetch.com`
 
-export const fetchUrl = (path: string) => {
+export const dogUrl = (path: string) => {
   return new URL(path, FETCH_URL)
 }
 
-export const useHandleFetchStatus = () => {
+export const useHandleDogStatus = () => {
   const router = useRouter()
   return (response: Response) => {
     if (response.status === 401) {
