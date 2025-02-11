@@ -17,7 +17,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { dogUrl } from '@/lib/dog-url'
-import Image from 'next/image'
 
 import dog_image from '@/public/dog.webp'
 import { ProgressiveImage } from '@/components/ui/progressive-image'
