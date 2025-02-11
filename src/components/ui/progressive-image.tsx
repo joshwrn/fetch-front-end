@@ -27,7 +27,7 @@ export const ProgressiveImage = ({
         }}
         {...props}
         loading="lazy"
-        onLoadingComplete={() => setIsLoading(false)}
+        onLoad={() => setIsLoading(false)}
       />
     </>
   )

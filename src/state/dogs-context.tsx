@@ -6,7 +6,7 @@ type Dog = z.infer<typeof DogSchema>
 
 export const DogsContext = React.createContext<{
   favorites: Dog[]
-  setFavorites: (dogs: Dog[]) => void
+  setFavorites: React.Dispatch<React.SetStateAction<Dog[]>>
 }>({
   favorites: [],
   setFavorites: () => {},

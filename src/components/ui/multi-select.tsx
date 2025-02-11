@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from './dropdown-menu'
 import { Button } from './button'
+import { ChevronDown } from 'lucide-react'
 
 interface ISelectProps {
   values: {
@@ -40,8 +41,14 @@ export const MultiSelect = ({ values, label, onChange }: ISelectProps) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex gap-2">
-            <span>Select {label}</span>
+          <Button
+            variant="outline"
+            className="flex gap-2 w-full justify-between p-3 border border-orange-950"
+          >
+            <span className="font-normal justify-self-start text-left">
+              Select {label}
+            </span>
+            <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
