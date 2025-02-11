@@ -44,7 +44,7 @@ const Match: React.FC = () => {
   const dog = matchedDogQuery.data
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden bg-orange-100 justify-center items-center">
+    <div className="flex flex-col w-full h-screen overflow-auto bg-orange-100 justify-center items-center">
       <header className="grid grid-cols-3 gap-4 items-center px-5 py-4 bg-orange-100 bg-opacity-90 border-orange-200 border fixed top-0 left-0 right-0 z-10 backdrop-blur-lg">
         <Button
           variant="outline"
@@ -57,12 +57,12 @@ const Match: React.FC = () => {
           Restart
         </Button>
       </header>
-      <h1 className="text-xl font-bold text-center text-orange-950 mb-4">
+      <h1 className="text-xl font-bold text-center text-orange-950 mb-4 pt-[220px] md:pt-0">
         Your New Best Friend!
       </h1>
       <div
         key={dog.id}
-        className="flex flex-col items-center relative overflow-hidden rounded-xl gap-2 p-4 shrink-0 bg-orange-50 h-[500px] md:h-[500px] lg:h-[600px] w-full md:w-1/2"
+        className="flex flex-col items-center relative overflow-hidden rounded-xl gap-2 p-4 shrink-0 bg-orange-50 h-full md:h-[600px] w-full md:w-1/2 md:max-w-[500px]"
       >
         <div className="w-full h-full overflow-hidden relative">
           <ProgressiveImage
