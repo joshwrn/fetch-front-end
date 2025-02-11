@@ -3,7 +3,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './dropdown-menu'
@@ -54,7 +53,7 @@ export const MultiSelect = ({
             className="flex gap-2 w-full justify-between p-3 border border-orange-950"
           >
             <span className="font-normal justify-self-start text-left">
-              Select {label}
+              {label}
             </span>
             <ChevronDown className="h-4 w-4" />
           </Button>
@@ -63,7 +62,6 @@ export const MultiSelect = ({
           className="w-56 max-h-[300px] overflow-auto"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          <DropdownMenuLabel>{label}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {values.map((value: ISelectProps[`values`][0], index: number) => {
             return (

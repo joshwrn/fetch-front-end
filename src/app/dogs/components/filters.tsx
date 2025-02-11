@@ -26,16 +26,11 @@ import { useQuery } from '@tanstack/react-query'
 export const Filters: React.FC = () => {
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button
-          variant="outline"
-          className="flex gap-2 w-full justify-between p-3"
-        >
-          <span className="font-normal justify-self-start text-left">
-            Filters
-          </span>
-          <RxMixerVertical className="h-4 w-4" />
-        </Button>
+      <DialogTrigger className="flex gap-2 w-full justify-between p-3 items-center bg-orange-50 rounded-md py-2 px-4">
+        <span className="font-normal justify-self-start text-left">
+          Filters
+        </span>
+        <RxMixerVertical className="h-4 w-4" />
       </DialogTrigger>
       <DialogContent className="w-[300px]">
         <DialogHeader>
@@ -86,12 +81,13 @@ const BreedSelection = () => {
       }))
     },
   })
+  const selectedBreeds = queryParams.params.breeds?.split(`,`) ?? []
   return (
     <MultiSelect
       values={breedsQuery.data ?? []}
-      label={`Breeds`}
+      label={`Filtered Breeds (${selectedBreeds.length})`}
       onChange={(value) => queryParams.push(`breeds`, value.join(`,`))}
-      defaultSelectedItems={queryParams.params.breeds?.split(`,`) ?? []}
+      defaultSelectedItems={selectedBreeds ?? []}
     />
   )
 }
