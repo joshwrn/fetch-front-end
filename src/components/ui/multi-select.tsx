@@ -17,9 +17,17 @@ interface ISelectProps {
   }[]
   label: string
   onChange: (value: string[]) => void
+  defaultSelectedItems: string[]
 }
-export const MultiSelect = ({ values, label, onChange }: ISelectProps) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
+export const MultiSelect = ({
+  values,
+  label,
+  onChange,
+  defaultSelectedItems,
+}: ISelectProps) => {
+  const [selectedItems, setSelectedItems] =
+    useState<string[]>(defaultSelectedItems)
+
   const handleSelectChange = (value: string) => {
     if (!selectedItems.includes(value)) {
       const newSelectedItems = [...selectedItems, value]

@@ -91,6 +91,7 @@ const BreedSelection = () => {
       values={breedsQuery.data ?? []}
       label={`Breeds`}
       onChange={(value) => queryParams.push(`breeds`, value.join(`,`))}
+      defaultSelectedItems={queryParams.params.breeds?.split(`,`) ?? []}
     />
   )
 }
