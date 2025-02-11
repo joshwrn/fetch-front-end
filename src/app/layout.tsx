@@ -2,7 +2,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Providers } from './providers'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <Providers>
           <Toaster />
-          {children}
+          <Suspense>{children}</Suspense>
         </Providers>
       </body>
     </html>
