@@ -1,5 +1,4 @@
 'use client'
-import Image, { ImageProps } from 'next/image'
 import React from 'react'
 import { Skeleton } from './skeleton'
 
@@ -10,12 +9,14 @@ export const ProgressiveImage = ({
   height,
   className,
   ...props
-}: ImageProps) => {
+}: React.ImgHTMLAttributes<HTMLImageElement>) => {
   const [isLoading, setIsLoading] = React.useState(true)
   return (
     <>
       {isLoading && <Skeleton className={className} />}
-      <Image
+      {/* Don't want to use up all of my vercel "Image Optimization" on this app */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={src}
         alt={alt}
         width={width}

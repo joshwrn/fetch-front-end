@@ -18,9 +18,6 @@ import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { dogUrl } from '@/lib/dog-url'
 
-import dog_image from '@/public/dog.webp'
-import { ProgressiveImage } from '@/components/ui/progressive-image'
-
 const formSchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
@@ -59,8 +56,9 @@ export default function Home() {
     <div className="bg-orange-100 h-screen flex flex-col justify-center items-center">
       <div className="w-full max-w-[800px] h-fit md:h-full max-h-[500px] flex rounded-lg bg-orange-50 shadow-md overflow-hidden relative">
         <div className="w-full max-w-[600px] h-full hidden md:flex overflow-hidden relative">
-          <ProgressiveImage
-            src={dog_image}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/dog.webp"
             width={500}
             height={500}
             alt="dog"
